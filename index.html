@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <meta name="description" content="富强、民主、文明、和谐，自由、平等、公正、法治，爱国、敬业、诚信、友善">
+  <title>社会主义核心价值观时钟</title>
+  <style>
+    body { background: #E2E2E2; margin: 0; padding: 0; font-family: Microsoft Yahei, sans-serif; text-align: center; }
+    h1, #readable { color: #BA3722; font-weight: normal; line-height: 1; margin: 30px 0; }
+    h1 { margin-top: 50px; }
+    canvas#clock { display: block; margin: 0 auto; }
+    footer { font-size: 12px; position: absolute; right: 0; bottom: 0; left: 0; padding: 1rem; background-color: #efefef; }
+  </style>
+</head>
+<body>
+  <h1>社会主义核心价值观</h1>
+  <canvas id="clock" width="300" height="300"></canvas>
+  <div id="readable"></div>
+  <footer>理论学习：<a href="http://theory.people.com.cn/">人民网理论频道</a></footer>
+
+  <script>
+    var jzg = ['富强', '民主', '文明', '和谐', '自由', '平等', '公正', '法治', '爱国', '敬业', '诚信', '友善']
+
+    // thanks to nishigaba@codepen.io (https://codepen.io/nishigaba/)
+    var canvas = document.getElementById('clock')
+    var ctx = canvas.getContext('2d')
+    var radius = canvas.height / 2
+    ctx.translate(radius, radius)
+    radius = radius * 0.90
+    drawClock()
+    setInterval(drawClock, 1000)
+
+    function drawClock () {
+      drawFace(ctx, radius)
+      drawNumbers(ctx, radius)
+      drawTime(ctx, radius)
+    }
+
+    function drawFace (ctx, radius) {
+      ctx.beginPath()
+      ctx.arc(0, 0, radius, 0, 2 * Math.PI)
+      ctx.fillStyle = '#FFF'
+      ctx.fill()
+
+      ctx.beginPath()
+      ctx.arc(0, 0, radius * 0.1, 0, 2 * Math.PI)
+      ctx.fillStyle = '#666'
+      ctx.fill()
+    }
+
+    function drawNumbers (ctx, radius) {
+      var ang
+      var num
+      ctx.font = (radius * 0.15) + 'px Microsoft Yahei, sans-serif'
+      ctx.textBaseline = 'middle'
+      ctx.textAlign = 'center'
+      ctx.fillStyle = '#BA3722'
+      
+      for (num = 0; num < 12; num++) {
+        ang = num * Math.PI / 6
+        ctx.rotate(ang)
+        ctx.translate(0, -radius * 0.82)
+        ctx.rotate(-ang)
+        ctx.fillText(jzg[num], 0, 0)
+        ctx.rotate(ang)
+        ctx.translate(0, radius * 0.82)
+        ctx.rotate(-ang)
+      }
+    }
+
+    function drawTime (ctx, radius) {
+      var now = new Date()
+      var hour = now.getHours()
+      var minute = now.getMinutes()
+      var second = now.getSeconds()
+      // hour
+      hour = hour % 12
+      hour = (hour * Math.PI / 6) + (minute * Math.PI / (6 * 60)) + (second * Math.PI / (360 * 60))
+      drawHand(ctx, hour, radius * 0.5, radius * 0.05)
+      // minute
+      minute = (minute * Math.PI / 30) + (second * Math.PI / (30 * 60))
+      drawHand(ctx, minute, radius * 0.8, radius * 0.03)
+      // second
+      second = (second * Math.PI / 30)
+      drawHand(ctx, second, radius * 0.9, radius * 0.01)
+      // 现在是XXYY时间
+      var hourText = jzg[now.getHours() % 12]
+      var minuteText = jzg[Math.round(now.getMinutes() / 5) % 12]
+      document.getElementById('readable').innerText = '现在是：' + hourText + '、' + minuteText + ' 时间'
+    }
+
+    function drawHand (ctx, pos, length, width) {
+      ctx.beginPath()
+      ctx.lineWidth = width
+      ctx.lineCap = 'round'
+      ctx.moveTo(0, 0)
+      ctx.rotate(pos)
+      ctx.lineTo(0, -length)
+      ctx.stroke()
+      ctx.rotate(-pos)
+    }
+  </script>
+</body>
+</html>
